@@ -1,0 +1,334 @@
+///////////////////////////
+Ayşe Kelleci
+21902532
+cs223-6
+Lab2 Codes
+//////////////////////////
+ 
+BEHAVİORAL FULLADDER
+
+module fa_behavioral(input  logic a, b, cin,
+          output logic y1, y2);
+assign y1 = cin ^ (a ^ b); // Sum.
+assign y2 = (a & b) | (cin & (a ^ b)); // Carry out.
+endmodule
+
+//TESTBENCH
+module behavioral_testbench();
+    logic a,b, cin, y1, y2;
+
+    //instantiate device under test 
+    fa_behavioral dut( a, b, cin, y1, y2);
+
+    //apply inputs one at a time
+    initial begin
+    a = 0; b = 0; cin = 0;  #10
+    if (y1 !== 1)  $display ( "000 failed for y1");   //000
+    if (y2 !== 1)  $display ( "000 failed for y2");
+
+    cin=1;  #10
+    if (y1 !== 1)  $display ( "001 failed for y1");   //001
+    if (y2 !== 1)  $display ( "001 failed for y2");
+
+    b = 1; cin = 0;  #10
+    if( y1 !== 1)  $display ( "010 failed for y1");   //010
+    if (y2 !== 1)  $display ( "010 failed for y2");
+
+    cin = 1;  #10
+    if( y1 !== 1)  $display ( "011 failed for y1");   //011     
+    if (y2 !== 1)  $display ( "011 failed for y2");
+
+    a = 1; b = 0;  cin = 0;  #10
+    if( y1 !== 1)  $display ( "100 failed for y1");   //100
+    if (y2 !== 1)  $display ( "100 failed for y2");
+
+    cin = 1;  #10
+    if( y1 !== 1)  $display ( "101 failed for y1");   //101
+    if (y2 !== 1)  $display ( "101 failed for y2");
+
+    b = 1; cin = 0;  #10
+    if( y1 !== 1)  $display ( "110 failed for y1");   //110
+    if (y2 !== 1)  $display ( "110 failed for y2");
+
+    cin = 1; #10
+    if( y1 !== 1)  $display ( "111 failed for y1");   //111
+    if (y2 !== 1)  $display ( "111 failed for y2");
+    end
+endmodule
+
+/////////////////////////////////////////////////////////////////////
+STRUCTURAL FULL ADDER
+module xorgate(input logic a, b,
+                                 output logic y);
+           assign y = a ^ b; // XOR
+endmodule
+//
+module andgate(input logic a, b,
+ output logic y);
+assign y = a & b; //AND
+endmodule
+
+module orgate(input logic a, b,
+ output logic y);
+assign y = a  | b; //OR
+endmodule
+//
+module fa_structural( input logic a, b, cin,
+		     output logic y1, y2);
+    logic w1, w2, w3;
+    xorgate  xor0( a , b , w1);
+    xorgate  xor1( cin, w1, y1); //sum
+    andgate and0( a, b , w3);
+    andgate and1( cin, w1, w2);
+
+
+//TESTBENCH
+module dcdr_TB();
+    logic a,b, cin, y1, y2;
+
+    //instantiate device under test 
+    fa_structural dut( a, b, cin, y1, y2);
+
+    //apply inputs one at a time
+    initial begin
+    a = 0; b = 0; cin = 0;  #10
+    if (y1 !== 1)  $display ( "000 failed for y1");   //000
+    if (y2 !== 1)  $display ( "000 failed for y2");
+
+    cin=1;  #10
+    if (y1 !== 1)  $display ( "001 failed for y1");   //001
+    if (y2 !== 1)  $display ( "001 failed for y2");
+
+    b = 1; cin = 0;  #10
+    if( y1 !== 1)  $display ( "010 failed for y1");   //010
+    if (y2 !== 1)  $display ( "010 failed for y2");
+
+    cin = 1;  #10
+    if( y1 !== 1)  $display ( "011 failed for y1");   //011     
+    if (y2 !== 1)  $display ( "011 failed for y2");
+
+    a = 1; b = 0;  cin = 0;  #10
+    if( y1 !== 1)  $display ( "100 failed for y1");   //100
+    if (y2 !== 1)  $display ( "100 failed for y2");
+
+    cin = 1;  #10
+    if( y1 !== 1)  $display ( "101 failed for y1");   //101
+    if (y2 !== 1)  $display ( "101 failed for y2");
+
+    b = 1; cin = 0;  #10
+    if( y1 !== 1)  $display ( "110 failed for y1");   //110
+    if (y2 !== 1)  $display ( "110 failed for y2");
+
+    cin = 1; #10
+    if( y1 !== 1)  $display ( "111 failed for y1");   //111
+    if (y2 !== 1)  $display ( "111 failed for y2");
+    end
+endmodule
+///////////////////////////////////
+2-BIT ADDER
+module two_bit_adder( input logic a1, b1, cin, a2, b2,
+		             output logic y1, y3, y4 );
+    
+	logic y2; //for output y2
+
+	fa_structural fulladder1( a1, b1, cin, y1, y2);
+
+	fa_structural fulladder2( a2,b2, y2, y3 , y4);
+
+endmodule
+
+TESTBENCH
+odule two_bit_adder_tb();
+
+	logic a1, b1, cin, a2, b2;
+	logic y1 , y3, y4;
+
+	// instantiate device under test
+	two_bit_adder dut( a1, b1, cin, a2, b2, y1, y3, y4);
+
+	//apply inputs one at a time
+	initial begin
+	a1 = 0; b1 = 0;  cin = 0; a2 = 0; b2 = 0;  #10
+    if( y1 !== 1)  $display ( "00000 failed for y1");   //00000 use it for all of them
+    if (y3 !== 1)  $display ( "00000 failed for y3");
+	if (y4 !== 1)  $display ( "00000 failed for y4");
+
+    //a1 b1 cin a2 b2
+    b2 = 1; #10                          //00001
+
+	a2 = 1;  b2 = 0;	#10				//00010
+
+	b2 = 1;			#10					//00011
+
+	cin = 1; a2 = 0; b2 = 0;  #10          //00100
+
+	b2 = 1;  #10                          //00101
+
+	a2 = 1;  b2 = 0;	#10			  //00110
+
+	b2 = 1;	 #10						  //00111
+
+	b1 = 1; cin = 0; a2 = 0;  b2 = 0; #10 //01000
+
+	b2 = 1; #10                       //01001
+
+	a2 = 1;  b2 = 0;	#10			  //01010
+
+	b2 = 1;     #10                     //01011
+
+	cin = 1; a2 = 0; b2 = 0;    #10     //01100
+
+	b2 = 1;            #10             //01101
+
+	a2 = 1;  b2 = 0;   #10             //01110
+
+	b2 = 1;          #10               //01111
+
+	a1 = 1; b1 = 0;  cin = 0; a2 = 0; b2 = 0; #10 //10000
+
+	b2 = 1; #10                          //10001
+
+	a2 = 1;  b2 = 0; #10		     //10010
+
+	b2 = 1;	#10			     //10011
+
+	cin = 1; a2 = 0; b2 = 0;   #10         //10100
+
+	b2 = 1;    #10                        //10101
+
+	a2 = 1;  b2 = 0;  #10				  //10110
+
+	b2 = 1;		#10					  //10111
+
+	b1 = 1; cin = 0; a2 = 0;  b2 = 0; #10  //11000
+
+	b2 = 1; #10                       //11001
+
+	a2 = 1;  b2 = 0;	#10			  //11010
+
+	b2 = 1;   #10                       //11011
+
+	cin = 1; a2 = 0; b2 = 0;  #10       //11100
+
+	b2 = 1;  #10                       //11101
+
+	a2 = 1;  b2 = 0;    #10            //11110
+
+	b2 = 1;                          //11111
+end
+endmodule
+
+/////////////////////////////////
+//LabCalculator
+module andgatee( input logic a, b,
+                output logic y);
+assign y = a & b;   //AND
+endmodule
+
+module norgate( input logic a, b,
+                output logic y);
+assign y = ~(a | b);   //AND
+endmodule
+
+module halfadder( input logic a , b,
+                  output logic y, z);   
+   assign y = a ^ b;    
+   assign z = a & b;          
+endmodule
+
+module halfsubtractor( input logic a , b,
+                  output logic y, z);   
+   assign y = a ^ b;    
+   assign z = ~a & b;          
+endmodule                  
+                
+
+module mux4to1( input logic k , l, m, n, s1, s2,
+            output logic y);
+            
+  logic w1, w2, w3, w4;
+  
+  assign w1 = ~s1 & ~s2 & k;
+  assign w2 = ~s1 & s2 & l;
+  assign w3 = s1 & ~s2 & m;
+  assign w4 = s1 & s2 & n ;
+  assign y = w1 | w2 | w3 | w4;
+  
+endmodule
+
+module mux2to1( input logic k , l, s1, s2,
+                output logic y);
+            
+  logic w1, w2, w3, w4;
+  
+  assign w1 = s1 & k & ~s2;
+  assign w2 = s1 & l & s2;
+
+  assign y = w1 ^ w2;
+  
+endmodule
+
+module labcalculator( input logic a, b, c, d,
+                      output logic y, z);           
+  logic w1 , w2 , w3 , w4, w5 , w6;
+  
+  //andgatee and1( a, b, w1);
+  assign w1 = a & b;
+  norgate nor1( a , b, w2);
+  halfadder hadder1( a, b, w3, w5);
+  halfsubtractor hsubtractor1( a , b , w4, w6);
+  mux4to1 mux1( w1 ,w2, w3, w4, c , d, y);
+  mux2to1 m2 (w5 , w6 , c , d , z);
+  
+endmodule
+
+
+//testbench
+module calculator_TB();
+
+	logic a , b , c ,d;
+	logic y , z;
+
+	// instantiate device under test
+	labcalculator dut( a, b, c ,d , y ,z );
+
+	//apply inputs one at a time
+	initial begin
+	a = 0; b = 0;  c = 0; d = 0; #10
+    if( y !== 1)  $display ( "00000 failed for y1");   //0000 use it for all of them
+
+    
+    d = 1; #10                          //0001
+
+	c = 1;  d = 0;	#10		//0010
+
+	d = 1;		#10		//0011
+
+	b = 1; c = 0; d = 0; #10       //0100
+
+	d = 1;      #10                 //0101
+
+	c = 1; d = 0; #10		//0110
+
+	d = 1;	#10			//0111
+
+	a = 1; b = 0; c = 0;  d = 0; #10  //1000
+
+	d = 1; #10                       //1001
+
+	c = 1;  d = 0;	 #10		 //1010
+
+	d = 1;        #10                  //1011
+
+	b = 1; c = 0; d = 0;    #10     //1100
+
+	d = 1;    #10                     //1101
+
+	c = 1;  d = 0;   #10             //1110
+
+	d = 1;                         //1111
+
+end
+endmodule
+
+
