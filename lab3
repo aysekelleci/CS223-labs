@@ -1,0 +1,188 @@
+CS223 LAB3 PRELİMİNARY 
+
+///PART B ( 2to4 DECODER)
+module decoder2to4_bhv ( input logic a, b,  output logic y0, y1, y2, y3);
+
+  assign y0 = !a & !b;
+  assign y1 = !a & b;
+  assign y2 = a & !b;
+  assign y3 = a & b;
+
+endmodule
+
+//TESTBENCH
+module decoder2to4_test();
+    logic a, b, y0, y1, y2, y3;
+
+    //instantiate device under test 
+    decoder2to4_bhv dut( a, b, y0, y1, y2, y3);
+
+    //apply inputs one at a time
+    initial begin
+    a = 0; b = 0;  #10
+
+    a = 0; b = 1; #10
+
+    a = 1; b = 0;  #10
+
+    a = 1; b = 1; 
+
+    end
+endmodule
+
+///PART C ( MULTIPLEXER 2 TO 1)
+module mux2to1( logic input d0, d1, s,
+ logic output y);
+logic w1, w2;
+ assign w1 = d0 & !s;
+ assign w2 = d1 & s;
+ assign y = w1 || w2;
+endmodule
+
+
+// Part D ( multiplexer 4 to 1 by using multiplexer 2to1)
+module mux2to1( input logic d0, d1, s,
+ output logic y);
+logic w1, w2;
+assign w1 = d0 & !s;
+ assign w2 = d1 & s;
+assign y = w1 || w2;
+endmodule
+
+module mux4to1( input logic a, b, c, d, s0, s1,
+ output logic y);
+  logic w1 , w2;
+  mux2to1 mux1( a, b, s0 , w1);
+  mux2to1 mux2( c, d , s0, w2);
+  mux2to1 mux3( w1, w2, s1, y );
+  endmodule
+
+//testbench
+module mux4to1_test();
+    logic  a, b, c, d, s0, s1, y;
+
+    // instantiate device under test
+	  mux4to1 dut( a, b, c ,d , s0 ,s1, y );
+
+	  //apply inputs one at a time
+	  initial begin
+	    s1 = 0; s0 = 0; a = 0; b = 0;  c = 0; d = 0; #10
+    
+      a = 1; #10
+    
+      s1 = 0; s0 = 1;  a =0; b = 1; #10
+    
+      b = 0; #10
+    
+      s1 = 1; s0 = 0;  c = 1; #10
+    
+      c = 0; #10
+    
+      s1 = 1; s0 = 1; d = 1; #10
+    
+      d = 0; #10
+    
+	    s1 = 1; s0 = 1; a = 1; b = 1;  c = 1; d = 1; 
+	end    
+endmodule
+ 
+//PART E (Multiplexer 8to1 by using mux4 to1)
+
+module mux8to1( input logic  a0, a1, a2, a3, a4, a5, a6, a7, s0, s1, s2,
+                output logic y );
+
+logic w1, w2, w3, w4;
+
+mux4to1  mux1( a0, a1, a2, a3, s0, s1, w1 );
+
+mux4to1  mux2( a4, a5, a6, a7, s0, s1, w2 );
+
+and and1( w3 , w1, !s2);
+and and2( w4 , w2, s2);
+
+or or1( y , w3 , w4);
+
+endmodule
+
+//TESTBENCH
+module mux8to1_test();
+
+    logic a0, a1, a2, a3, a4, a5, a6, a7, s0, s1, s2, y;
+    
+    mux8to1 dut( a0, a1, a2, a3, a4, a5, a6, a7, s0, s1, s2, y);
+    
+    //apply inputs one at a time
+	initial begin
+	s2=0; s1=0; s0=0; a0 = 0; a1= 0; a2=0; a3= 0; a4=0; a5=0; a6=0; a7=0;  #10
+	
+	a0 = 1; #10
+	
+	s2=0; s1=0; s0=1; a1 = 1; a0 = 0; #10
+	
+	a1 = 0; #10
+	
+	s2=0; s1=1; s0=0; a2 = 1; #10
+	
+	a2 = 0; #10
+	
+	s2=0; s1=1; s0=1; a3 = 1; #10
+	
+	a3 = 0; #10
+	
+	s2=1; s1=0; s0=0; a4 = 1; #10
+	
+	a4 = 0; #10
+	
+	s2=1; s1=0; s0=1;  a5 =1; #10
+	
+	a5 = 0; #10
+	
+	s2=1; s1=1; s0=0; a6 = 1; #10
+	
+	a6 = 0; #10
+	
+	s2=1; s1=1; s0=1; a7 = 1; #10
+	
+	a7 = 0; 
+	
+    end
+	
+endmodule
+
+//PART F
+module mux8to1demo(input logic  a,b, c, d,
+                   output logic y );
+                   
+       logic notD;
+       
+       not( notD ,d);
+       
+       mux8to1 mux1( 0, notD, d, 1, 0, notD, 1, d, c, b, a, y);
+       
+    
+endmodule
+
+//Testbench
+module mux8to1demo_test();
+ logic a, b, c, d, y;
+ mux8to1demo dut(a,b, c, d, y );
+ initial begin
+ a = 0; b= 0; c = 0; d = 0; #10
+ d = 1; #10
+ c = 1; d = 0; #10
+ d = 1; #10
+ b = 1; c = 0; d = 0; #10
+ d = 1; #10
+ c = 1; d = 0; #10
+ d = 1; #10
+ a = 1; b= 0; c = 0; d = 0; #10 //1000
+ d = 1; #10
+ c = 1; d = 0; #10
+ d = 1; #10
+ b = 1; c = 0; d = 0; #10
+ d = 1; #10
+ c = 1; d = 0; #10
+ d = 1; 
+ 
+ end 
+endmodule
